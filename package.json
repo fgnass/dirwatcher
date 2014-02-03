@@ -1,0 +1,23 @@
+{
+  "name": "dirwatcher",
+  "version": "0.0.1",
+  "description": "recursively watch a directory for modifications",
+  "main": "index.js",
+  "dependencies": {
+    "findit": "~1.1.0",
+    "statdir": "~2.0.0",
+    "minimatch": "~0.2.12",
+    "filewatcher": "~1.1.0",
+    "debounce": "0.0.3"
+  },
+  "devDependencies": {
+    "mocha": "~1.14.0",
+    "should": "~2.1.0",
+    "touch": "~0.0.2",
+    "mkdirp": "~0.3.5",
+    "rimraf": "~2.2.2"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}
