@@ -2,9 +2,13 @@
 
 Recursively watch a directory for modifications.
 
+Uses [findit](https://npmjs.org/package/findit) to walk the directory tree,
+[filewatcher](https://npmjs.org/package/filewatcher) to watch each dir
+and [minimatch](https://npmjs.org/package/minimatch) to match the files.
+
 ## Usage
 
-Pass a dir and either a RegExp, function or glob pattern:
+Pass a `dir` and either a RegExp, function or a glob pattern:
 
 ```js
 w = dirwatcher(dir, '*.txt')

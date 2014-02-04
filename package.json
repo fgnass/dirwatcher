@@ -3,6 +3,12 @@
   "version": "0.0.1",
   "description": "recursively watch a directory for modifications",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fgnass/dirwatcher.git"
+  },
+  "author": "Felix Gnass",
+  "license": "MIT",
   "dependencies": {
     "findit": "~1.1.0",
     "statdir": "~2.0.0",
