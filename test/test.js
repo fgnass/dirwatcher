@@ -27,8 +27,8 @@ describe('dirwatcher', function() {
         throw Error('must not be called ' +file)
       })
       w.once('added', function(file) {
-        w.on('added', function(file) {
-          file.name.should.equal('baz.txt')
+        w.on('added', function(file, stat) {
+          path.basename(file).should.equal('baz.txt')
           done()
         })
         create('bar/baz.boo')

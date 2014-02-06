@@ -32,7 +32,7 @@ function DirWatcher(dir, match) {
   }, 10)
 
   function emit(files, type) {
-    files.filter(match).forEach(function(f) { self.emit(type, f) })
+    files.filter(match).forEach(function(f) { self.emit(type, f.path, f.stat) })
     steady()
   }
 
@@ -86,6 +86,6 @@ DirWatcher.prototype.stop = function() {
 DirWatcher.prototype.files = function() {
   var all = []
   for (var d in this.snapshots) all.push.apply(all, this.snapshots[d])
-  return all.filter(this.match)
+  return all.filter(this.match).map(function(f) { return f.path })
 }
 

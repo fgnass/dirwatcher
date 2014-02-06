@@ -12,9 +12,8 @@ Pass a `dir` and either a RegExp, function or a glob pattern:
 
 ```js
 w = dirwatcher(dir, '*.txt')
-w.on('changed', function(file) {
-  console.log(file.stat)
-  console.log(file.path)
+w.on('changed', function(file, stat) {
+  console.log(file, stat.mtime)
 })
 ```
 
