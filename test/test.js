@@ -1,12 +1,14 @@
+/* global describe, it, beforeEach, afterEach */
+
 var dirwatcher = require('..')
-  , fs = require('fs')
-  , path = require('path')
-  , mkdirp = require('mkdirp')
-  , rimraf = require('rimraf')
-  , should = require('should')
+var fs = require('fs')
+var path = require('path')
+var mkdirp = require('mkdirp')
+var rimraf = require('rimraf')
+var should = require('should')
 
 var dir = __dirname + '/tmp'
-  , w
+var w
 
 describe('dirwatcher', function() {
 

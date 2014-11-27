@@ -25,7 +25,7 @@ A dirwatcher emits the following events:
 * `added` - when a file is added. Also fires during the initial scan.
 * `changed` - when the mtime of a file modified. Does not take the actual file content into account.
 * `removed` - when a file has been removed
-* `steady` - 30 ms after the last event was fired.
+* `steady` - 10 ms after the last event was fired.
 
 ### The MIT License (MIT)
 
