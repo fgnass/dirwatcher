@@ -32,9 +32,6 @@ function filesOnly(f, stat) {
 function DirWatcher(root, opts) {
   var self = this
 
-  // watcher to watch each dir
-  var watcher = this.watcher = filewatcher()
-
   // list of directorx snapshots
   var snapshots = this.snapshots = {}
 
@@ -48,6 +45,9 @@ function DirWatcher(root, opts) {
   this.match = match(opts.include) || filesOnly
 
   var skip = match(opts.skip)
+
+  // watcher to watch each dir
+  var watcher = this.watcher = filewatcher(opts)
 
   var steady = debounce(function() {
     self.emit('steady')
