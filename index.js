@@ -1,17 +1,35 @@
-var filewatcher = require('filewatcher')
-var minimatch = require('minimatch')
-var find = require('findit')
-var statdir = require('statdir')
-var util = require('util')
-var debounce = require('debounce')
 var events = require('events')
+var path = require('path')
+var util = require('util')
+
+var debounce = require('debounce')
+var filewatcher = require('filewatcher')
+var find = require('findit')
+var minimatch = require('minimatch')
+var statdir = require('statdir')
+
 var EventEmitter = events.EventEmitter
 
 module.exports = function(dir, match) {
   return new DirWatcher(dir, match)
 }
 
-function DirWatcher(dir, match) {
+function match(p) {
+  if (typeof p == 'string') p = minimatch.makeRe(p)
+  if (p instanceof RegExp) {
+    var re = p
+    p = function(f, stat) {
+      return re.test(path.basename(f))
+    }
+  }
+  return p
+}
+
+function filesOnly(f, stat) {
+  return stat.isFile()
+}
+
+function DirWatcher(root, opts) {
   var self = this
 
   // watcher to watch each dir
@@ -20,23 +38,16 @@ function DirWatcher(dir, match) {
   // list of directorx snapshots
   var snapshots = this.snapshots = {}
 
-  // ready means the inital scan has finished
-  var ready
-
   EventEmitter.call(this)
 
-  // match all files by default
-  if (!match) match = function(f) { return f.stat.isFile() }
+  if (!opts
+    || typeof opts == 'string'
+    || opts instanceof RegExp)
+    opts = { include: opts }
 
-  // convert strings to a globbing regexp
-  if (typeof match == 'string') match = minimatch.makeRe(match)
+  this.match = match(opts.include) || filesOnly
 
-  if (match.test) {
-    var re = match
-    match = function(f) { return re.test(f.name) }
-  }
-
-  this.match = match
+  var skip = match(opts.skip)
 
   var steady = debounce(function() {
     self.emit('steady')
@@ -47,7 +58,7 @@ function DirWatcher(dir, match) {
   * configured pattern.
   */
   function emit(files, type) {
-    files.filter(match).forEach(function(f) {
+    files.filter(self.match).forEach(function(f) {
       self.emit(type, f.path, f.stat)
     })
     steady()
@@ -60,12 +71,16 @@ function DirWatcher(dir, match) {
       return
     }
     statdir(dir, function(err, stats) {
+      if (err) return self.emit('error', err)
+
       var diff = statdir.diff(snapshots[dir], stats)
       snapshots[dir] = stats
+
       diff.added.forEach(function(f) {
         // if a directory was added add it to the watch list
         if (f.stat.isDirectory()) add(f.path)
       })
+
       diff.removed.forEach(function(f) {
         // if a directory was removed emit remove events for each file
         if (f.stat.isDirectory()) emit(snapshots[f], 'removed')
@@ -76,22 +91,28 @@ function DirWatcher(dir, match) {
   })
 
   function add(dir) {
-    var finder = find(dir)
-    finder.on('directory', function(dir) {
+    var finder = find(dir || root)
+    finder.on('directory', function(dir, stat, stop) {
+
+      // skip this directory?
+      if (skip && skip(dir, stat)) return stop()
+
       statdir(dir, function(err, stats) {
+        if (err) return self.emit('error', err)
         emit(stats, 'added')
         snapshots[dir] = stats
         watcher.add(dir)
       })
     })
-    if (!ready) finder.on('end', function() {
-      ready = true
+
+    if (!dir) finder.on('end', function() {
       self.emit('ready')
       steady()
     })
   }
 
-  add(dir)
+  process.nextTick(add)
+
 }
 
 util.inherits(DirWatcher, EventEmitter)

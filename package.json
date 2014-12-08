@@ -17,11 +17,10 @@
     "statdir": "~2.0.0"
   },
   "devDependencies": {
-    "mocha": "~1.14.0",
-    "should": "~2.1.0",
-    "touch": "~0.0.2",
-    "mkdirp": "~0.3.5",
-    "rimraf": "~2.2.2"
+    "mkdirp": "^0.5.0",
+    "rimraf": "^2.2.8",
+    "tap": "^0.4.13",
+    "touch": "0.0.3"
   },
   "scripts": {
     "test": "mocha"

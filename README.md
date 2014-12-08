@@ -6,15 +6,20 @@ Uses [findit](https://npmjs.org/package/findit) to walk the directory tree,
 [filewatcher](https://npmjs.org/package/filewatcher) to watch each dir
 and [minimatch](https://npmjs.org/package/minimatch) to match the files.
 
+This method is very resource-friendly for large numbers of files since only
+one file handle per directory is used.
+
 ## Usage
 
-Pass a `dir` and either a RegExp, function or a glob pattern:
+Pass a the path of a `dir` to watch:
 
 ```js
-w = dirwatcher(dir, '*.txt')
+var dirwatcher = require('dirwatcher');
+
+w = dirwatcher(dir, opts);
 w.on('changed', function(file, stat) {
-  console.log(file, stat.mtime)
-})
+  console.log(file, stat.mtime);
+});
 ```
 
 ## Events
@@ -26,6 +31,36 @@ A dirwatcher emits the following events:
 * `changed` - when the mtime of a file modified. Does not take the actual file content into account.
 * `removed` - when a file has been removed
 * `steady` - 10 ms after the last event was fired.
+
+## Options
+
+You can specify a RegExp, String (a glob pattern) or function to control which
+files are inclued and which sub-directories should be skipped.
+
+```js
+w = dirwatcher(dir, {
+  include: '*.js',
+  skip: 'node_modules'
+});
+```
+
+If you just want to specify the `include` option you can pass it as 2nd argument:
+
+```js
+w = dirwatcher(dir, '*.js');
+```
+
+__Note__: If no `include` option is given, the following default implementation is used:
+
+```js
+function filesOnly(f, stat) {
+  return stat.isFile();
+}
+```
+
+Regular expressions and glob patterns are tested against a file's basename. If
+you need to take the full path into account you have to pass a function instead.
+
 
 ### The MIT License (MIT)
 
