@@ -3,7 +3,6 @@ var fs = require('fs')
 var path = require('path')
 var mkdirp = require('mkdirp')
 var rimraf = require('rimraf')
-var should = require('should')
 
 var test = require('tap').test
 

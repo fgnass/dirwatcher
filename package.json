@@ -23,6 +23,6 @@
     "touch": "0.0.3"
   },
   "scripts": {
-    "test": "npm test"
+    "test": "node test"
   }
 }
