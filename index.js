@@ -39,6 +39,7 @@ function DirWatcher(root, opts) {
 
   if (!opts
     || typeof opts == 'string'
+    || typeof opts == 'function'
     || opts instanceof RegExp)
     opts = { include: opts }
 
