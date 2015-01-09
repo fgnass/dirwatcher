@@ -24,7 +24,7 @@ function create(f) {
 }
 
 test('should report added files', function(t) {
-  t.plan(2)
+  t.plan(3)
   cleanup()
   create('t1.txt')
   w = dirwatcher(dir, '*.txt')
@@ -37,6 +37,7 @@ test('should report added files', function(t) {
     w.once('added', function(file) {
       w.on('added', function(file, stat) {
         t.equal(path.basename(file), 'baz.txt')
+        t.ok(stat.isFile())
       })
       create('t1/baz.boo')
       create('t1/baz.txt')
@@ -46,28 +47,30 @@ test('should report added files', function(t) {
 })
 
 test('should report modified files', function(t) {
-  t.plan(1)
+  t.plan(2)
   cleanup()
   create('t2/bar.txt')
   w = dirwatcher(dir, '*.txt')
   w.on('error', function(err) { throw err })
   w.on('ready', function(file) {
-    w.on('changed', function(file) {
+    w.on('changed', function(file, stat) {
       t.ok(true, 'fire changed event')
+      t.ok(stat.isFile())
     })
     timer = setTimeout(function() { create('t2/bar.txt') }, 1000)
   })
 })
 
 test('should report removed files', function(t) {
-  t.plan(1)
+  t.plan(2)
   cleanup()
   var f = create('t3.txt')
   w = dirwatcher(dir, '*.txt')
   w.on('error', function(err) { throw err })
   w.on('ready', function(file) {
-    w.on('removed', function(file) {
+    w.on('removed', function(file, stat) {
       t.ok(true, 'fire removed event')
+      t.ok(stat.isFile())
     })
     fs.unlinkSync(f)
   })
