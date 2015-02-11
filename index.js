@@ -48,7 +48,7 @@ function DirWatcher(root, opts) {
   var skip = match(opts.skip)
 
   // watcher to watch each dir
-  var watcher = this.watcher = filewatcher(opts)
+  var watcher = this.watcher = filewatcher()
 
   var steady = debounce(function() {
     self.emit('steady')
