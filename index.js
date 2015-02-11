@@ -50,6 +50,13 @@ function DirWatcher(root, opts) {
   // watcher to watch each dir
   var watcher = this.watcher = filewatcher()
 
+  watcher.on('fallback', function(limit) {
+    this.removeAll()
+    self.emit('error', 'Ran out of file handles after watching '
+      + limit + ' directories'
+    )
+  })
+
   var steady = debounce(function() {
     self.emit('steady')
   }, 10)
