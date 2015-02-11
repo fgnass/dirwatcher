@@ -32,8 +32,8 @@ function filesOnly(f, stat) {
 function DirWatcher(root, opts) {
   var self = this
 
-  var snapshots = this.snapshots = {}
   // list of directory snapshots
+  this.snapshots = {}
 
   EventEmitter.call(this)
 
@@ -73,7 +73,8 @@ function DirWatcher(root, opts) {
   }
 
   watcher.on('change', function(dir, stat) {
-    if (!stat) {
+    var snapshots = self.snapshots
+    if (stat.deleted) {
       delete snapshots[dir]
       watcher.remove(dir)
       return
@@ -100,16 +101,15 @@ function DirWatcher(root, opts) {
 
   function add(dir) {
     var finder = find(dir || root)
-    finder.on('directory', function(dir, stat, stop) {
+    finder.on('directory', function(d, stat, stop) {
 
       // skip this directory?
-      if (skip && skip(dir, stat)) return stop()
+      if (dir && skip && skip(d, stat)) return stop()
 
-      statdir(dir, function(err, stats) {
+      statdir(d, function(err, stats) {
         if (err) return self.emit('error', err)
-        emit(stats, 'added')
-        snapshots[dir] = stats
-        watcher.add(dir)
+        self.snapshots[d] = stats
+        watcher.add(d)
       })
     })
 
@@ -130,6 +130,7 @@ DirWatcher.prototype.stop = function() {
   this.watcher.removeAll()
   this.watcher.removeAllListeners()
   this.removeAllListeners()
+  this.snapshots = {}
 }
 
 /* Returns a list of all watched files */
