@@ -27,9 +27,9 @@ w.on('changed', function(file, stat) {
 A dirwatcher emits the following events:
 
 * `ready` - when the inital directory scan is completed.
-* `added` - when a file is added. Also fires during the initial scan.
+* `added` - when a file is added.
 * `changed` - when the mtime of a file modified. Does not take the actual file content into account.
-* `removed` - when a file has been removed
+* `removed` - when a file has been removed.
 * `steady` - 10 ms after the last event was fired.
 
 ## Options
@@ -64,7 +64,7 @@ you need to take the full path into account you have to pass a function instead.
 
 ### The MIT License (MIT)
 
-Copyright (c) 2014 Felix Gnass
+Copyright (c) 2015 Felix Gnass
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
