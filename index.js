@@ -18,7 +18,7 @@ function match(p) {
   if (typeof p == 'string') p = minimatch.makeRe(p)
   if (p instanceof RegExp) {
     var re = p
-    p = function(f, stat) {
+    p = function(f) {
       return re.test(path.basename(f))
     }
   }
