@@ -10,8 +10,8 @@ var statdir = require('statdir')
 
 var EventEmitter = events.EventEmitter
 
-module.exports = function(dir, match) {
-  return new DirWatcher(dir, match)
+module.exports = function(dir, opts) {
+  return new DirWatcher(dir, opts)
 }
 
 function match(p) {
