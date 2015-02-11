@@ -32,8 +32,8 @@ function filesOnly(f, stat) {
 function DirWatcher(root, opts) {
   var self = this
 
-  // list of directorx snapshots
   var snapshots = this.snapshots = {}
+  // list of directory snapshots
 
   EventEmitter.call(this)
 
