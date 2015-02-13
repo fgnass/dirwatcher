@@ -103,7 +103,7 @@ function DirWatcher(root, opts) {
     finder.on('directory', function(d, stat, stop) {
 
       // skip this directory?
-      if (dir && skip && skip(d, stat)) return stop()
+      if (d != root && skip && skip(d, stat)) return stop()
 
       statdir(d, function(err, stats) {
         if (err) return self.emit('error', err)
