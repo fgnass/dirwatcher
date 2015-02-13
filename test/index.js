@@ -100,11 +100,11 @@ test('ignore skipped directories', function(t) {
   create('t5/skip/me.txt')
   create('t5/skip/me/too.txt')
 
-  w = dirwatcher(dir, { include: '*.txt', skip: 'skip' })
+  w = dirwatcher(dir, { include: '*.txt', skip: /skip/ })
 
   w.on('error', function(err) { throw err })
   w.on('ready', function(file) {
-    t.equals(this.files().length, 1)
+    t.equal(this.files().length, 1)
   })
 })
 
