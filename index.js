@@ -72,17 +72,16 @@ function DirWatcher(root, opts) {
   }
 
   watcher.on('change', function(dir, stat) {
-    var snapshots = self.snapshots
     if (stat.deleted) {
-      delete snapshots[dir]
+      delete self.snapshots[dir]
       watcher.remove(dir)
       return
     }
     statdir(dir, function(err, stats) {
       if (err) return self.emit('error', err)
 
-      var diff = statdir.diff(snapshots[dir], stats)
-      snapshots[dir] = stats
+      var diff = statdir.diff(self.snapshots[dir], stats)
+      self.snapshots[dir] = stats
 
       diff.added.forEach(function(f) {
         // if a directory was added add it to the watch list
@@ -93,7 +92,7 @@ function DirWatcher(root, opts) {
 
       diff.removed.forEach(function(f) {
         // if a directory was removed emit remove events for each file
-        if (f.stat.isDirectory()) emit(snapshots[f], 'removed')
+        if (f.stat.isDirectory()) emit(self.snapshots[f], 'removed')
       })
 
       for (var type in diff) emit(diff[type], type)
