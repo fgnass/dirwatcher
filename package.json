@@ -12,9 +12,9 @@
   "dependencies": {
     "debounce": "0.0.3",
     "filewatcher": "^2.0.2",
-    "findit": "~1.1.0",
-    "minimatch": "~0.2.12",
-    "statdir": "~2.0.0"
+    "findit": "^1.1.1",
+    "minimatch": "^0.2.14",
+    "statdir": "^3.0.0"
   },
   "devDependencies": {
     "mkdirp": "^0.5.0",
