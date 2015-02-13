@@ -72,15 +72,23 @@ function DirWatcher(root, opts) {
   }
 
   watcher.on('change', function(dir, stat) {
+    var snap
+
     if (stat.deleted) {
-      delete self.snapshots[dir]
-      watcher.remove(dir)
+      var snap = self.snapshots[dir]
+      if (snap) {
+        delete self.snapshots[dir]
+        watcher.remove(dir)
+        emit(snap, 'removed')
+      }
       return
     }
     statdir(dir, function(err, stats) {
-      if (err) return self.emit('error', err)
-
-      var snap = self.snapshots[dir]
+      if (err) {
+        if (err.code != 'ENOENT') self.emit('error', err)
+        return
+      }
+      snap = self.snapshots[dir]
       if (!snap) return
 
       var diff = statdir.diff(snap, stats)
@@ -94,8 +102,12 @@ function DirWatcher(root, opts) {
       })
 
       diff.removed.forEach(function(f) {
-        // if a directory was removed emit remove events for each file
-        if (f.stat.isDirectory()) emit(self.snapshots[f], 'removed')
+        var s = self.snapshots[f]
+        if (s) {
+          // if a directory was removed emit remove events for each file
+          delete self.snapshots[f]
+          emit(s, 'removed')
+        }
       })
 
       for (var type in diff) emit(diff[type], type)
@@ -103,22 +115,33 @@ function DirWatcher(root, opts) {
   })
 
   function add(dir) {
+    var end
+    var pending = 0
+
+    function readyCheck() {
+      if (end && !pending)
+      self.emit('ready')
+      steady()
+    }
+
     var finder = find(dir || root)
     finder.on('directory', function(d, stat, stop) {
       // skip this directory?
       if (d != root && skip && skip(d, stat)) return stop()
-
+      pending++
       statdir(d, function(err, stats) {
+        pending--
         if (err) return self.emit('error', err)
         if (dir) emit(stats, 'added')
         self.snapshots[d] = stats
         watcher.add(d)
+        readyCheck()
       })
     })
 
     if (!dir) finder.on('end', function() {
-      self.emit('ready')
-      steady()
+      end = true
+      readyCheck()
     })
   }
 
