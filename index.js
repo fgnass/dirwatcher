@@ -14,6 +14,8 @@ module.exports = function(dir, opts) {
   return new DirWatcher(dir, opts)
 }
 
+module.exports.filewatcher = filewatcher
+
 function match(p) {
   if (typeof p == 'string') p = minimatch.makeRe(p)
   if (p instanceof RegExp) {
