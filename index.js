@@ -86,7 +86,9 @@ function DirWatcher(root, opts) {
 
       diff.added.forEach(function(f) {
         // if a directory was added add it to the watch list
-        if (f.stat.isDirectory()) add(f.path)
+        if (f.stat.isDirectory()) {
+          if (!skip || !skip(f.path, f.stat)) add(f.path)
+        }
       })
 
       diff.removed.forEach(function(f) {
