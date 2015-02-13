@@ -10,6 +10,7 @@
     "no-use-before-define": "nofunc",
     "no-underscore-dangle": false,
     "no-path-concat": false,
+    "consisten-return": false,
     "curly": false,
     "eqeqeq": false
   }
