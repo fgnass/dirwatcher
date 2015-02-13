@@ -80,7 +80,10 @@ function DirWatcher(root, opts) {
     statdir(dir, function(err, stats) {
       if (err) return self.emit('error', err)
 
-      var diff = statdir.diff(self.snapshots[dir], stats)
+      var snap = self.snapshots[dir]
+      if (!snap) return
+
+      var diff = statdir.diff(snap, stats)
       self.snapshots[dir] = stats
 
       diff.added.forEach(function(f) {
