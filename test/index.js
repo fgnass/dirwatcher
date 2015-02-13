@@ -62,7 +62,6 @@ test('should report modified files', function(t) {
       t.ok(stat.isFile())
     })
     timer = setTimeout(function() { 
-      console.log('create t2/bar.txt')
       create('t2/bar.txt')
     }, 1000)
   })
@@ -75,7 +74,7 @@ test('should report removed files', function(t) {
   w.on('error', function(err) { throw err })
   w.on('ready', function(file) {
     w.on('removed', function(file, stat) {
-      t.ok(true, 'fire removed event')
+      t.ok(file, 'fire removed event')
       t.ok(stat.isFile())
     })
     fs.unlinkSync(f)
@@ -84,12 +83,12 @@ test('should report removed files', function(t) {
 
 test('should report files in removed dirs', function(t) {
   t.plan(1)
-  var f = create('t4/bar.txt')
+  create('t4/bar.txt')
   w = dirwatcher(dir, '*.txt')
   w.on('error', function(err) { throw err })
-  w.on('ready', function(file) {
+  w.on('ready', function() {
     w.on('removed', function(file) {
-      t.ok(true, 'fire removed event')
+      t.ok(file, 'fire removed event')
     })
     rimraf.sync(path.join(dir, 't4'))
   })
@@ -107,9 +106,9 @@ test('ignore skipped directories', function(t) {
   w = dirwatcher(dir, { include: '*.txt', skip: /skip/ })
 
   w.on('error', function(err) { throw err })
-  w.on('ready', function(file) {
+  w.on('ready', function() {
     t.equal(this.files().length, 1)
   })
 })
 
-process.on('exit', cleanup)
+//process.on('exit', cleanup)
