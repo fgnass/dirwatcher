@@ -101,12 +101,12 @@ function DirWatcher(root, opts) {
   function add(dir) {
     var finder = find(dir || root)
     finder.on('directory', function(d, stat, stop) {
-
       // skip this directory?
       if (d != root && skip && skip(d, stat)) return stop()
 
       statdir(d, function(err, stats) {
         if (err) return self.emit('error', err)
+        if (dir) emit(stats, 'added')
         self.snapshots[d] = stats
         watcher.add(d)
       })
