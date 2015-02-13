@@ -1,6 +1,6 @@
 {
   "name": "dirwatcher",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "recursively watch a directory for modifications",
   "main": "index.js",
   "repository": {
