@@ -4,16 +4,22 @@ var path = require('path')
 var mkdirp = require('mkdirp')
 var rimraf = require('rimraf')
 
-var test = require('tap').test
+var tap = require('tap')
 
 var dir = __dirname + '/tmp'
 var w
 var timer
 
 function cleanup() {
-  if (w) w.stop()
   if (timer) clearTimeout(timer)
+  if (w) w.stop()
   rimraf.sync(dir)
+}
+
+function test(name, conf, cb) {
+  return tap.test(name, conf, cb)
+    .once('end', cleanup)
+
 }
 
 function create(f) {
@@ -25,7 +31,6 @@ function create(f) {
 
 test('should report added files', function(t) {
   t.plan(3)
-  cleanup()
   create('t1.txt')
   w = dirwatcher(dir, '*.txt')
   w.on('error', function(err) { throw err })
@@ -37,7 +42,7 @@ test('should report added files', function(t) {
     w.once('added', function(file) {
       w.on('added', function(file, stat) {
         t.equal(path.basename(file), 'baz.txt')
-        t.ok(stat.isFile())
+        t.ok(stat.isFile(), 'isFile')
       })
       create('t1/baz.boo')
       create('t1/baz.txt')
@@ -48,7 +53,6 @@ test('should report added files', function(t) {
 
 test('should report modified files', function(t) {
   t.plan(2)
-  cleanup()
   create('t2/bar.txt')
   w = dirwatcher(dir, '*.txt')
   w.on('error', function(err) { throw err })
@@ -57,13 +61,15 @@ test('should report modified files', function(t) {
       t.ok(true, 'fire changed event')
       t.ok(stat.isFile())
     })
-    timer = setTimeout(function() { create('t2/bar.txt') }, 1000)
+    timer = setTimeout(function() { 
+      console.log('create t2/bar.txt')
+      create('t2/bar.txt')
+    }, 1000)
   })
 })
 
 test('should report removed files', function(t) {
   t.plan(2)
-  cleanup()
   var f = create('t3.txt')
   w = dirwatcher(dir, '*.txt')
   w.on('error', function(err) { throw err })
@@ -78,7 +84,6 @@ test('should report removed files', function(t) {
 
 test('should report files in removed dirs', function(t) {
   t.plan(1)
-  cleanup()
   var f = create('t4/bar.txt')
   w = dirwatcher(dir, '*.txt')
   w.on('error', function(err) { throw err })
@@ -93,7 +98,6 @@ test('should report files in removed dirs', function(t) {
 
 test('ignore skipped directories', function(t) {
   t.plan(1)
-  cleanup()
 
   create('t5/foo')
   create('t5/bar.txt')
@@ -106,11 +110,6 @@ test('ignore skipped directories', function(t) {
   w.on('ready', function(file) {
     t.equal(this.files().length, 1)
   })
-})
-
-test('teardown', function(t) {
-  w.stop()
-  t.end()
 })
 
 process.on('exit', cleanup)
